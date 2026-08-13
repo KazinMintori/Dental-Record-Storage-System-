@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.dentalclinic.controller.ReportController" styleClass="screen" spacing="24">
+    <VBox spacing="4">
+        <Label text="In báo cáo" styleClass="page-title"/>
+        <Label text="Chọn loại báo cáo và khoảng thời gian tùy chỉnh" styleClass="page-subtitle"/>
+    </VBox>
+
+    <VBox styleClass="panel" spacing="18" maxWidth="880">
+        <Label text="Loại báo cáo" styleClass="section-title"/>
+        <GridPane hgap="16">
+            <columnConstraints><ColumnConstraints percentWidth="50"/><ColumnConstraints percentWidth="50"/></columnConstraints>
+            <ToggleButton fx:id="patientBookOption" onAction="#selectPatientBook" maxWidth="Infinity"
+                          text="Sổ khám bệnh&#10;Thông tin bệnh nhân và các lần khám"
+                          wrapText="true" styleClass="report-option"/>
+            <ToggleButton fx:id="revenueOption" GridPane.columnIndex="1" onAction="#selectRevenue" maxWidth="Infinity"
+                          text="Tổng doanh thu&#10;Tổng hợp doanh thu theo khoảng ngày"
+                          wrapText="true" styleClass="report-option"/>
+        </GridPane>
+
+        <VBox styleClass="date-range-panel" spacing="14">
+            <Label text="Khoảng thời gian" styleClass="section-title"/>
+            <GridPane hgap="18">
+                <columnConstraints><ColumnConstraints percentWidth="50"/><ColumnConstraints percentWidth="50"/></columnConstraints>
+                <VBox spacing="6"><Label text="Từ ngày" styleClass="field-label"/><DatePicker fx:id="fromDatePicker" maxWidth="Infinity" promptText="Chọn ngày bắt đầu"/></VBox>
+                <VBox GridPane.columnIndex="1" spacing="6"><Label text="Đến ngày" styleClass="field-label"/><DatePicker fx:id="toDatePicker" maxWidth="Infinity" promptText="Chọn ngày kết thúc"/></VBox>
+            </GridPane>
+            <Label fx:id="reportDescription" wrapText="true" styleClass="helper-text"/>
+        </VBox>
+
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Xem trước" styleClass="secondary-button" disable="true"/>
+            <Button text="In" styleClass="primary-button" disable="true"/>
+        </HBox>
+        <Label text="Chức năng xem trước và in sẽ được hoàn thiện ở giai đoạn sau."
+               styleClass="placeholder-note" wrapText="true"/>
+    </VBox>
+</VBox>

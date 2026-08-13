@@ -1,0 +1,5 @@
+SUPABASE_DB_HOST=your-host
+SUPABASE_DB_PORT=your-port
+SUPABASE_DB_NAME=your-database-name
+SUPABASE_DB_USER=your-database-user
+SUPABASE_DB_PASSWORD=your-database-password

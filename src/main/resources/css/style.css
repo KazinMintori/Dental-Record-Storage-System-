@@ -1,0 +1,346 @@
+.root {
+    -clinic-blue: #2563eb;
+    -clinic-blue-dark: #163b72;
+    -clinic-blue-light: #eaf2ff;
+    -clinic-border: #dbe4f0;
+    -clinic-muted: #66758a;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.app-root, .content-host {
+    -fx-background-color: #f5f8fc;
+}
+
+.sidebar {
+    -fx-background-color: #123765;
+    -fx-padding: 28 14;
+    -fx-spacing: 8;
+}
+
+.brand-block {
+    -fx-padding: 0 12 28 12;
+    -fx-spacing: 3;
+}
+
+.brand-title {
+    -fx-text-fill: white;
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+}
+
+.brand-subtitle {
+    -fx-text-fill: #bcd3ef;
+    -fx-font-size: 12px;
+}
+
+.navigation-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #d9e8f8;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 13 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.navigation-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.09);
+}
+
+.navigation-button-active {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+}
+
+.screen {
+    -fx-padding: 28;
+    -fx-background-color: #f5f8fc;
+}
+
+.page-title {
+    -fx-text-fill: #163b72;
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+}
+
+.page-subtitle, .muted-text {
+    -fx-text-fill: #66758a;
+    -fx-font-size: 13px;
+}
+
+.panel {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #dbe4f0;
+    -fx-border-radius: 12;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(28, 55, 90, 0.07), 14, 0.1, 0, 3);
+}
+
+.section-title {
+    -fx-text-fill: #19385f;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.detail-title {
+    -fx-text-fill: #163b72;
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+}
+
+.text-field, .text-area, .date-picker {
+    -fx-background-color: white;
+    -fx-border-color: #cfdbea;
+    -fx-border-radius: 7;
+    -fx-background-radius: 7;
+    -fx-font-size: 13px;
+}
+
+.text-field, .date-picker {
+    -fx-pref-height: 39;
+}
+
+.text-field:focused, .text-area:focused, .date-picker:focused {
+    -fx-border-color: #2563eb;
+}
+
+.search-field {
+    -fx-prompt-text-fill: #8492a6;
+}
+
+.primary-button, .secondary-button {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 16;
+    -fx-background-radius: 7;
+    -fx-cursor: hand;
+}
+
+.primary-button {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+}
+
+.primary-button:hover {
+    -fx-background-color: #1d4ed8;
+}
+
+.secondary-button {
+    -fx-background-color: #eaf2ff;
+    -fx-text-fill: #1d55a5;
+    -fx-border-color: #c8dcfa;
+    -fx-border-radius: 7;
+}
+
+.button:disabled {
+    -fx-opacity: 0.72;
+}
+
+.patient-card {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 9;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 9;
+    -fx-padding: 16;
+    -fx-min-height: 92px;
+    -fx-pref-height: 92px;
+    -fx-cursor: hand;
+}
+
+.patient-grid {
+    -fx-background-color: transparent;
+    -fx-alignment: TOP_LEFT;
+}
+
+.patient-screen-root {
+    -fx-background-color: #f5f8fc;
+}
+
+.directory-empty-state {
+    -fx-background-color: rgba(245, 248, 252, 0.96);
+}
+
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1d55a5;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 7 0;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+}
+
+.status-bar {
+    -fx-padding: 8 28 0 28;
+}
+
+.patient-card:hover {
+    -fx-background-color: #f0f6ff;
+    -fx-border-color: #a8c7f5;
+}
+
+.patient-card-selected {
+    -fx-background-color: #eaf2ff;
+    -fx-border-color: #2563eb;
+    -fx-border-width: 1.5;
+}
+
+.patient-name {
+    -fx-text-fill: #17385f;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.patient-birth-date, .helper-text, .placeholder-note {
+    -fx-text-fill: #718096;
+    -fx-font-size: 12px;
+}
+
+.field-label {
+    -fx-text-fill: #718096;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.field-value {
+    -fx-text-fill: #253b56;
+    -fx-font-size: 14px;
+}
+
+.transparent-scroll, .transparent-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.transparent-scroll {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.visit-card {
+    -fx-background-color: #f8fbff;
+    -fx-border-color: #dce8f7;
+    -fx-border-radius: 9;
+    -fx-background-radius: 9;
+    -fx-padding: 16;
+}
+
+.visit-date {
+    -fx-text-fill: #1d55a5;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.count-badge {
+    -fx-background-color: #eaf2ff;
+    -fx-background-radius: 12;
+    -fx-padding: 4 9;
+    -fx-text-fill: #1d55a5;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.form-pane {
+    -fx-text-fill: #19385f;
+    -fx-font-weight: bold;
+}
+
+.form-pane > .title {
+    -fx-background-color: white;
+    -fx-border-color: #dbe4f0;
+    -fx-background-radius: 10 10 0 0;
+    -fx-border-radius: 10 10 0 0;
+    -fx-padding: 13 16;
+}
+
+.form-pane > *.content {
+    -fx-background-color: white;
+    -fx-border-color: #dbe4f0;
+    -fx-border-radius: 0 0 10 10;
+}
+
+.form-grid {
+    -fx-padding: 18;
+}
+
+.report-option {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #dbe4f0;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-text-fill: #254160;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+}
+
+.report-option:selected {
+    -fx-background-color: #eaf2ff;
+    -fx-border-color: #2563eb;
+    -fx-text-fill: #164d9b;
+}
+
+.date-range-panel {
+    -fx-background-color: #f8fbff;
+    -fx-border-color: #e0eaf6;
+    -fx-border-radius: 9;
+    -fx-background-radius: 9;
+    -fx-padding: 18;
+}
+
+.empty-state {
+    -fx-min-height: 130px;
+}
+
+.status-message {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.status-success {
+    -fx-text-fill: #167447;
+}
+
+.status-error {
+    -fx-text-fill: #b42318;
+}
+
+.revenue-row {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8;
+    -fx-background-color: #f8fbff;
+    -fx-background-radius: 8;
+    -fx-border-color: #dce8f7;
+    -fx-border-radius: 8;
+}
+
+.revenue-header {
+    -fx-padding: 0 8;
+    -fx-text-fill: #718096;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.revenue-total {
+    -fx-padding: 12 4;
+}
+
+.revenue-total-value {
+    -fx-text-fill: #163b72;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.danger-button {
+    -fx-background-color: #fff1f0;
+    -fx-text-fill: #b42318;
+    -fx-border-color: #fecaca;
+    -fx-border-radius: 7;
+    -fx-background-radius: 7;
+    -fx-padding: 9 12;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}

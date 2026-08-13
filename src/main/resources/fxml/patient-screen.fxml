@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.dentalclinic.controller.PatientController" styleClass="patient-screen-root">
+    <Label fx:id="statusMessage" wrapText="true" styleClass="status-message status-bar"/>
+    <StackPane VBox.vgrow="ALWAYS">
+    <VBox fx:id="directoryView" styleClass="screen" spacing="22">
+        <HBox alignment="CENTER_LEFT">
+            <VBox spacing="4">
+                <Label text="Bệnh nhân" styleClass="page-title"/>
+                <Label text="Quản lý thông tin và hồ sơ khám bệnh" styleClass="page-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="+ Thêm bệnh nhân" onAction="#openNewPatientForm" styleClass="primary-button"/>
+        </HBox>
+        <HBox spacing="8" maxWidth="430" alignment="CENTER_LEFT">
+            <TextField fx:id="searchField" promptText="Tìm theo họ và tên..." onAction="#searchPatients"
+                       styleClass="search-field" HBox.hgrow="ALWAYS"/>
+            <Button text="Tìm" onAction="#searchPatients" styleClass="secondary-button"/>
+        </HBox>
+        <StackPane fx:id="directoryContent" VBox.vgrow="ALWAYS">
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="transparent-scroll">
+                <TilePane fx:id="patientListContainer" prefTileWidth="210" prefTileHeight="92"
+                          hgap="14" vgap="14" tileAlignment="TOP_LEFT" styleClass="patient-grid">
+                    <padding><Insets top="2" right="2" bottom="24" left="2"/></padding>
+                </TilePane>
+            </ScrollPane>
+            <VBox fx:id="directoryEmptyState" alignment="CENTER" spacing="10" styleClass="directory-empty-state">
+                <Label text="Chưa có bệnh nhân" styleClass="section-title"/>
+                <Label text="Thêm bệnh nhân đầu tiên để bắt đầu" styleClass="helper-text"/>
+                <Button text="+ Thêm bệnh nhân" onAction="#openNewPatientForm" styleClass="primary-button"/>
+            </VBox>
+        </StackPane>
+        <Label fx:id="listMessage" wrapText="true" styleClass="helper-text" visible="false" managed="false"/>
+    </VBox>
+
+    <VBox fx:id="detailView" styleClass="screen" spacing="18" visible="false" managed="false">
+        <Button text="← Danh sách bệnh nhân" onAction="#showDirectory"
+                styleClass="back-button" maxWidth="190"/>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label fx:id="selectedPatientName" styleClass="page-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="editPatientButton" text="Chỉnh sửa thông tin"
+                    onAction="#openEditPatientForm" styleClass="secondary-button"/>
+            <Button fx:id="addVisitButton" text="+ Thêm lần khám"
+                    onAction="#openVisitForm" styleClass="primary-button"/>
+        </HBox>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" styleClass="transparent-scroll">
+            <VBox spacing="18">
+                <VBox styleClass="panel" spacing="16">
+                    <Label text="Thông tin bệnh nhân" styleClass="section-title"/>
+                    <Separator/>
+                    <GridPane hgap="28" vgap="16">
+                        <columnConstraints><ColumnConstraints percentWidth="50"/><ColumnConstraints percentWidth="50"/></columnConstraints>
+                        <VBox spacing="4"><Label text="Họ và tên" styleClass="field-label"/><Label fx:id="patientNameValue" styleClass="field-value"/></VBox>
+                        <VBox GridPane.columnIndex="1" spacing="4"><Label text="Giới tính" styleClass="field-label"/><Label fx:id="patientGenderValue" styleClass="field-value"/></VBox>
+                        <VBox GridPane.rowIndex="1" spacing="4"><Label text="Ngày sinh" styleClass="field-label"/><Label fx:id="patientBirthDateValue" styleClass="field-value"/></VBox>
+                        <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" spacing="4"><Label text="Giấy tờ tùy thân (không bắt buộc)" styleClass="field-label"/><Label fx:id="patientIdentityValue" styleClass="field-value"/></VBox>
+                        <VBox GridPane.rowIndex="2" spacing="4"><Label text="Số thẻ BHYT (không bắt buộc)" styleClass="field-label"/><Label fx:id="patientInsuranceValue" styleClass="field-value"/></VBox>
+                        <VBox GridPane.columnIndex="1" GridPane.rowIndex="2" spacing="4"><Label text="Địa chỉ (không bắt buộc)" styleClass="field-label"/><Label fx:id="patientAddressValue" styleClass="field-value" wrapText="true"/></VBox>
+                        <VBox GridPane.rowIndex="3" spacing="4"><Label text="Nghề nghiệp (không bắt buộc)" styleClass="field-label"/><Label fx:id="patientOccupationValue" styleClass="field-value"/></VBox>
+                        <VBox GridPane.columnIndex="1" GridPane.rowIndex="3" spacing="4"><Label text="Dân tộc (không bắt buộc)" styleClass="field-label"/><Label fx:id="patientEthnicityValue" styleClass="field-value"/></VBox>
+                    </GridPane>
+                </VBox>
+
+                <TitledPane fx:id="visitFormPane" text="Thông tin lần khám" expanded="false" animated="false" styleClass="form-pane">
+                    <VBox spacing="14" styleClass="form-grid">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label fx:id="visitFormHeading" text="Thêm lần khám" styleClass="section-title"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="deleteVisitButton" text="Xóa lần khám" onAction="#deleteCurrentVisit"
+                                    visible="false" managed="false" styleClass="danger-button"/>
+                        </HBox>
+                        <GridPane hgap="14" vgap="12">
+                            <columnConstraints><ColumnConstraints percentWidth="50"/><ColumnConstraints percentWidth="50"/></columnConstraints>
+                            <VBox spacing="5"><Label text="Ngày khám *" styleClass="field-label"/><DatePicker fx:id="visitDateField" maxWidth="Infinity"/></VBox>
+                            <VBox GridPane.columnIndex="1" spacing="5"><Label text="Bác sĩ khám *" styleClass="field-label"/><TextField fx:id="dentistField"/></VBox>
+                            <VBox GridPane.rowIndex="1" spacing="5"><Label text="Triệu chứng *" styleClass="field-label"/><TextArea fx:id="symptomsField" prefRowCount="2" wrapText="true"/></VBox>
+                            <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" spacing="5"><Label text="Chẩn đoán *" styleClass="field-label"/><TextArea fx:id="diagnosisField" prefRowCount="2" wrapText="true"/></VBox>
+                            <VBox GridPane.rowIndex="2" spacing="5"><Label text="Phương pháp điều trị *" styleClass="field-label"/><TextArea fx:id="treatmentField" prefRowCount="2" wrapText="true"/></VBox>
+                            <VBox GridPane.columnIndex="1" GridPane.rowIndex="2" spacing="5"><Label text="Ghi chú" styleClass="field-label"/><TextArea fx:id="visitNoteField" prefRowCount="2" wrapText="true"/></VBox>
+                        </GridPane>
+                        <Separator/>
+                        <HBox alignment="CENTER_LEFT">
+                            <VBox spacing="3">
+                                <Label text="Doanh thu" styleClass="section-title"/>
+                                <Label text="Diễn giải được lấy từ phương pháp điều trị — có thể chỉnh sửa"
+                                       styleClass="helper-text"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="+ Thêm dòng doanh thu" onAction="#addRevenueRow" styleClass="secondary-button"/>
+                        </HBox>
+                        <HBox spacing="8" styleClass="revenue-header">
+                            <Label text="Số hiệu" prefWidth="120"/><Label text="Ngày tháng" prefWidth="145"/>
+                            <Label text="Diễn giải" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                            <Label text="Số tiền" prefWidth="135"/><Label text="" prefWidth="48"/>
+                        </HBox>
+                        <VBox fx:id="revenueRowsContainer" spacing="8"/>
+                        <HBox alignment="CENTER_RIGHT" spacing="12" styleClass="revenue-total">
+                            <Label text="Tổng cộng" styleClass="field-label"/>
+                            <Label fx:id="revenueTotalLabel" text="0 đ" styleClass="revenue-total-value"/>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <Button text="Hủy" onAction="#cancelVisitForm" styleClass="secondary-button"/>
+                            <Button text="Lưu lần khám" onAction="#saveVisit" styleClass="primary-button"/>
+                        </HBox>
+                    </VBox>
+                </TitledPane>
+
+                <VBox styleClass="panel" spacing="14">
+                    <HBox alignment="CENTER_LEFT"><Label text="Lịch sử khám" styleClass="section-title"/><Region HBox.hgrow="ALWAYS"/><Label fx:id="visitCountLabel" text="0 lần khám" styleClass="count-badge"/></HBox>
+                    <VBox fx:id="visitListContainer" spacing="12"/>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+
+    <VBox fx:id="patientFormView" styleClass="screen" spacing="18" visible="false" managed="false">
+        <Button text="← Quay lại" onAction="#cancelPatientForm" styleClass="back-button" maxWidth="150"/>
+        <TitledPane fx:id="patientFormPane" text="Thông tin bệnh nhân" expanded="true" collapsible="false"
+                    animated="false" styleClass="form-pane">
+            <VBox spacing="16" styleClass="form-grid">
+                <Label fx:id="patientFormTitle" text="Thông tin bệnh nhân" styleClass="page-title"/>
+                <GridPane hgap="14" vgap="12">
+                    <columnConstraints><ColumnConstraints percentWidth="50"/><ColumnConstraints percentWidth="50"/></columnConstraints>
+                    <VBox spacing="5"><Label text="Họ và tên *" styleClass="field-label"/><TextField fx:id="patientNameField" promptText="Nhập họ và tên"/></VBox>
+                    <VBox GridPane.columnIndex="1" spacing="5"><Label text="Giới tính *" styleClass="field-label"/><TextField fx:id="patientGenderField" promptText="Nhập giới tính"/></VBox>
+                    <VBox GridPane.rowIndex="1" spacing="5"><Label text="Ngày sinh *" styleClass="field-label"/><DatePicker fx:id="patientBirthDateField" maxWidth="Infinity"/></VBox>
+                    <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" spacing="5"><Label text="Giấy tờ tùy thân" styleClass="field-label"/><TextField fx:id="patientIdentityField"/></VBox>
+                    <VBox GridPane.rowIndex="2" spacing="5"><Label text="Số thẻ BHYT" styleClass="field-label"/><TextField fx:id="patientInsuranceField"/></VBox>
+                    <VBox GridPane.columnIndex="1" GridPane.rowIndex="2" spacing="5"><Label text="Địa chỉ" styleClass="field-label"/><TextField fx:id="patientAddressField"/></VBox>
+                    <VBox GridPane.rowIndex="3" spacing="5"><Label text="Nghề nghiệp" styleClass="field-label"/><TextField fx:id="patientOccupationField"/></VBox>
+                    <VBox GridPane.columnIndex="1" GridPane.rowIndex="3" spacing="5"><Label text="Dân tộc" styleClass="field-label"/><TextField fx:id="patientEthnicityField"/></VBox>
+                </GridPane>
+                <HBox alignment="CENTER_RIGHT" spacing="8">
+                    <Button text="Hủy" onAction="#cancelPatientForm" styleClass="secondary-button"/>
+                    <Button text="Lưu" onAction="#savePatient" styleClass="primary-button"/>
+                </HBox>
+            </VBox>
+        </TitledPane>
+    </VBox>
+    </StackPane>
+</VBox>
