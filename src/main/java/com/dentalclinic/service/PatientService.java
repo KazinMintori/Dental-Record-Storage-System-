@@ -1,6 +1,9 @@
 package com.dentalclinic.service;
 
 import com.dentalclinic.model.Patient;
+import com.dentalclinic.model.PatientPage;
+import com.dentalclinic.model.PatientSearchCriteria;
+import com.dentalclinic.model.PatientGender;
 import com.dentalclinic.repository.PatientRepository;
 import com.dentalclinic.repository.RepositoryException;
 
@@ -42,10 +45,24 @@ public class PatientService {
     }
 
     public List<Patient> searchPatients(String name) {
+        return searchPatients(new PatientSearchCriteria(name, null, null, null, null));
+    }
+
+    public List<Patient> searchPatients(PatientSearchCriteria criteria) {
+        Objects.requireNonNull(criteria, "criteria must not be null");
         try {
-            return patientRepository.findByName(name);
+            return patientRepository.search(criteria);
         } catch (RepositoryException exception) {
             throw new ServiceException("Unable to search patients.", exception);
+        }
+    }
+
+    public PatientPage searchPatientPage(PatientSearchCriteria criteria, int pageIndex, int pageSize) {
+        Objects.requireNonNull(criteria, "criteria must not be null");
+        try {
+            return patientRepository.searchPage(criteria, pageIndex, pageSize);
+        } catch (RepositoryException exception) {
+            throw new ServiceException("Unable to load patient page.", exception);
         }
     }
 
@@ -67,12 +84,76 @@ public class PatientService {
         }
     }
 
+    public List<Patient> getDeletedPatients() {
+        try {
+            return patientRepository.findDeleted();
+        } catch (RepositoryException exception) {
+            throw new ServiceException("Unable to load deleted patients.", exception);
+        }
+    }
+
+    public PatientPage getDeletedPatientPage(int pageIndex, int pageSize) {
+        try {
+            return patientRepository.findDeletedPage(pageIndex, pageSize);
+        } catch (RepositoryException exception) {
+            throw new ServiceException("Unable to load deleted-patient page.", exception);
+        }
+    }
+
+    public void deletePatients(List<Long> ids) {
+        requireIds(ids);
+        try {
+            patientRepository.deleteAll(ids);
+        } catch (RepositoryException exception) {
+            throw new ServiceException("Unable to delete patients.", exception);
+        }
+    }
+
+    public void restorePatients(List<Long> ids) {
+        requireIds(ids);
+        try {
+            patientRepository.restoreAll(ids);
+        } catch (RepositoryException exception) {
+            throw new ServiceException("Unable to restore patients.", exception);
+        }
+    }
+
+    public void permanentlyDeletePatients(List<Long> ids) {
+        requireIds(ids);
+        try {
+            patientRepository.permanentlyDeleteAll(ids);
+        } catch (RepositoryException exception) {
+            throw new ServiceException("Unable to permanently delete patients.", exception);
+        }
+    }
+
+    public void restorePatient(Long id) {
+        requireId(id, "Patient ID is required.");
+        try {
+            patientRepository.restore(id);
+        } catch (RepositoryException exception) {
+            throw new ServiceException("Unable to restore patient.", exception);
+        }
+    }
+
+    public void permanentlyDeletePatient(Long id) {
+        requireId(id, "Patient ID is required.");
+        try {
+            patientRepository.permanentlyDelete(id);
+        } catch (RepositoryException exception) {
+            throw new ServiceException("Unable to permanently delete patient.", exception);
+        }
+    }
+
     private static void validatePatient(Patient patient) {
         if (patient == null) {
             throw new ServiceException("Patient is required.");
         }
         requireText(patient.getHoVaTen(), "Patient name is required.");
         requireText(patient.getGioiTinh(), "Patient gender is required.");
+        if (!PatientGender.isSupported(patient.getGioiTinh())) {
+            throw new ServiceException("Patient gender must be Nam, Nữ, or Khác.");
+        }
         if (patient.getNgaySinh() == null) {
             throw new ServiceException("Patient birth date is required.");
         }
@@ -87,6 +168,12 @@ public class PatientService {
     private static void requireId(Long id, String message) {
         if (id == null) {
             throw new ServiceException(message);
+        }
+    }
+
+    private static void requireIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty() || ids.stream().anyMatch(Objects::isNull)) {
+            throw new ServiceException("At least one patient ID is required.");
         }
     }
 }

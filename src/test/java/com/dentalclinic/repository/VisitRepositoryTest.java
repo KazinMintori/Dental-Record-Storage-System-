@@ -140,12 +140,10 @@ class VisitRepositoryTest {
     @Test
     void updateChangesVisit() throws Exception {
         Patient originalPatient = saveTemporaryPatient();
-        Patient newPatient = saveTemporaryPatient();
         Visit saved = visitRepository.save(completeVisit(originalPatient.getId(), LocalDate.of(2026, 8, 10)));
         makeUpdatedTimestampOlder(saved.getId());
         OffsetDateTime previousUpdatedAt = visitRepository.findById(saved.getId()).getUpdatedAt();
 
-        saved.setPatientId(newPatient.getId());
         saved.setTt(99);
         saved.setNgayKham(LocalDate.of(2026, 9, 1));
         saved.setTrieuChung("Trieu chung da cap nhat");
@@ -159,6 +157,18 @@ class VisitRepositoryTest {
         assertVisitFieldsEqual(saved, updated);
         assertTrue(updated.getUpdatedAt().isAfter(previousUpdatedAt));
         assertEquals(saved.getCreatedAt(), updated.getCreatedAt());
+    }
+
+    @Test
+    void updateCannotMoveVisitToAnotherPatientRecord() {
+        Patient originalPatient = saveTemporaryPatient();
+        Patient otherPatient = saveTemporaryPatient();
+        Visit saved = visitRepository.save(completeVisit(originalPatient.getId(), LocalDate.of(2026, 8, 10)));
+
+        saved.setPatientId(otherPatient.getId());
+
+        assertThrows(RepositoryException.class, () -> visitRepository.update(saved));
+        assertEquals(originalPatient.getId(), visitRepository.findById(saved.getId()).getPatientId());
     }
 
     @Test

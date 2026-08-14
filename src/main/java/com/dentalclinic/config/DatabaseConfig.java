@@ -1,12 +1,17 @@
 package com.dentalclinic.config;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 public final class DatabaseConfig {
+
+    private static final Object POOL_LOCK = new Object();
+    private static HikariDataSource sharedDataSource;
 
     public static final String HOST_ENVIRONMENT_VARIABLE = "SUPABASE_DB_HOST";
     public static final String PORT_ENVIRONMENT_VARIABLE = "SUPABASE_DB_PORT";
@@ -44,11 +49,21 @@ public final class DatabaseConfig {
         String database = environment.get(DATABASE_ENVIRONMENT_VARIABLE).trim();
         this.username = environment.get(USER_ENVIRONMENT_VARIABLE).trim();
         this.password = environment.get(PASSWORD_ENVIRONMENT_VARIABLE);
-        this.url = "jdbc:postgresql://" + host + ":" + port + "/" + database + "?sslmode=require";
+        this.url = "jdbc:postgresql://" + host + ":" + port + "/" + database
+                + "?sslmode=require&tcpKeepAlive=true";
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, username, password);
+        return dataSource().getConnection();
+    }
+
+    public static void shutdownConnectionPool() {
+        synchronized (POOL_LOCK) {
+            if (sharedDataSource != null) {
+                sharedDataSource.close();
+                sharedDataSource = null;
+            }
+        }
     }
 
     public String getUrl() {
@@ -57,6 +72,27 @@ public final class DatabaseConfig {
 
     public String getUsername() {
         return username;
+    }
+
+    private HikariDataSource dataSource() {
+        synchronized (POOL_LOCK) {
+            if (sharedDataSource == null || sharedDataSource.isClosed()) {
+                HikariConfig config = new HikariConfig();
+                config.setJdbcUrl(url);
+                config.setUsername(username);
+                config.setPassword(password);
+                config.setPoolName("dental-supabase-pool");
+                config.setMinimumIdle(1);
+                config.setMaximumPoolSize(4);
+                config.setConnectionTimeout(10_000);
+                config.setValidationTimeout(5_000);
+                config.setIdleTimeout(300_000);
+                config.setMaxLifetime(900_000);
+                config.setKeepaliveTime(120_000);
+                sharedDataSource = new HikariDataSource(config);
+            }
+            return sharedDataSource;
+        }
     }
 
     public static List<String> findMissingEnvironmentVariables() {

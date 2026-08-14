@@ -78,6 +78,17 @@ class RevenueRepositoryTest {
     }
 
     @Test
+    void saveAllowsNullDienGiai() {
+        Revenue revenue = new Revenue(
+                saveTemporaryVisit().getId(), LocalDate.of(9000, 1, 2), null, new BigDecimal("100.00")
+        );
+
+        Revenue saved = revenueRepository.save(revenue);
+
+        assertNull(revenueRepository.findById(saved.getId()).getDienGiai());
+    }
+
+    @Test
     void findByIdReturnsRevenue() {
         Revenue saved = revenueRepository.save(
                 completeRevenue(saveTemporaryVisit().getId(), LocalDate.of(9000, 1, 3), "250.25")

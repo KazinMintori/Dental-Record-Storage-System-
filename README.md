@@ -12,6 +12,8 @@ Dental Patient Records is a JavaFX desktop application for managing dental patie
 - PostgreSQL
 - Supabase PostgreSQL
 - PostgreSQL JDBC
+- HikariCP connection pool
+- Apache PDFBox 3 (Unicode PDF reports)
 - JUnit 5
 
 ## Architecture
@@ -45,7 +47,18 @@ patients 1 ── N visits 1 ── N doanh_thu
 - Revenue totals are calculated dynamically from monetary entries using `BigDecimal` and are not stored as a separate total field.
 - VAT and personal-income-tax fields are intentionally not stored in the domain model or database.
 
-The schema definition is available in `src/main/resources/db/migration/V1__create_dental_patient_schema.sql`.
+Schema migrations are available in `src/main/resources/db/migration`:
+
+- `V1__create_dental_patient_schema.sql` creates a new database.
+- `V2__patient_search_and_phone.sql` upgrades an existing database with patient phone numbers,
+  accent-insensitive Vietnamese name normalization, and search indexes.
+- `V3__patient_trash_and_gender.sql` adds soft deletion/trash, normalizes existing gender values,
+  restricts gender to `Nam`, `Nữ`, or `Khác`, and adds active/trash indexes.
+- `V4__patient_pagination_indexes_and_optional_revenue.sql` adds paging/search indexes and makes
+  revenue reference/description fields optional.
+
+For an existing Supabase project, run V2, V3, and then V4 once in the Supabase SQL Editor before
+starting this version. New databases only need V1 because it already contains the current schema.
 
 ## Environment Setup
 
@@ -56,6 +69,13 @@ Configure these environment variables before running the application or database
 - `SUPABASE_DB_NAME`
 - `SUPABASE_DB_USER`
 - `SUPABASE_DB_PASSWORD`
+
+Optional report metadata and PDF settings:
+
+- `DENTAL_CLINIC_NAME`
+- `DENTAL_CLINIC_ADDRESS`
+- `DENTAL_CLINIC_TAX_CODE`
+- `DENTAL_PDF_FONT` and `DENTAL_PDF_BOLD_FONT` (paths to Unicode TTF files; Windows Arial/Segoe UI are detected automatically)
 
 See `database.properties.example` for placeholder names only. The application reads credentials from environment variables; it does not load that example file directly.
 
@@ -80,12 +100,21 @@ Development phases 1–10 are represented in the current codebase:
 - Patient, visit, and revenue domain models
 - JDBC repositories and service-layer validation
 - JavaFX MVC shell, patient directory, patient details, and navigation
-- Patient create/edit/search workflows
+- Patient create/edit workflows with Unicode-preserving phone and demographic data
+- Debounced database-side Vietnamese name search, combined advanced filters, and patient table
+- Shared pooled Supabase connections, a 250 ms search debounce, and indexed active-record searches
+- Consistent `Ngày/Tháng/Năm` display/input and constrained `Nam`/`Nữ`/`Khác` gender selectors
+- Recoverable patient deletion through a trash view, with restore and guarded permanent deletion
+- A patient-detail loading view that remains visible for at least 450 ms and waits for visit data
+- Strictly isolated visit-editor state per patient, with stale asynchronous results discarded
+- Inline visit/revenue validation for required fields, date format, future dates, and monetary values
 - Visit history and atomic visit/revenue create and edit workflows
 - Dynamic `BigDecimal` revenue totals and cascade-aware visit deletion
+- Preview and Unicode PDF export for the 14-column medical book and portrait revenue book
+- The medical-book preview freezes `TT` and `Họ và tên` while the remaining columns scroll horizontally
+- The revenue PDF follows the paper `S2-HKD` form, retaining dotted placeholders and manual tax/signature fields
+- Report ranges based exclusively on the exact `visits.created_at` timestamp; the selected end date is inclusive
 - Automated repository, service, transaction-workflow, FXML, and JavaFX startup tests
-
-The next intended development phase is Phase 11. Its exact report/printing scope should be confirmed from the project plan before implementation; report generation and printing are not implemented in this repository state.
 
 ## Security
 

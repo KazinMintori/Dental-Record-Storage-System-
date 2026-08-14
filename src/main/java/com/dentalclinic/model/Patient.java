@@ -10,6 +10,7 @@ public class Patient {
     private String hoVaTen;
     private String gioiTinh;
     private LocalDate ngaySinh;
+    private String soDienThoai;
     private String giayToTuyThan;
     private String soTheBhyt;
     private String diaChi;
@@ -17,6 +18,7 @@ public class Patient {
     private String danToc;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private OffsetDateTime deletedAt;
 
     public Patient(String hoVaTen, String gioiTinh, LocalDate ngaySinh) {
         setHoVaTen(hoVaTen);
@@ -37,8 +39,46 @@ public class Patient {
             OffsetDateTime createdAt,
             OffsetDateTime updatedAt
     ) {
+        this(id, hoVaTen, gioiTinh, ngaySinh, null, giayToTuyThan, soTheBhyt,
+                diaChi, ngheNghiep, danToc, createdAt, updatedAt, null);
+    }
+
+    public Patient(
+            Long id,
+            String hoVaTen,
+            String gioiTinh,
+            LocalDate ngaySinh,
+            String soDienThoai,
+            String giayToTuyThan,
+            String soTheBhyt,
+            String diaChi,
+            String ngheNghiep,
+            String danToc,
+            OffsetDateTime createdAt,
+            OffsetDateTime updatedAt
+    ) {
+        this(id, hoVaTen, gioiTinh, ngaySinh, soDienThoai, giayToTuyThan, soTheBhyt,
+                diaChi, ngheNghiep, danToc, createdAt, updatedAt, null);
+    }
+
+    public Patient(
+            Long id,
+            String hoVaTen,
+            String gioiTinh,
+            LocalDate ngaySinh,
+            String soDienThoai,
+            String giayToTuyThan,
+            String soTheBhyt,
+            String diaChi,
+            String ngheNghiep,
+            String danToc,
+            OffsetDateTime createdAt,
+            OffsetDateTime updatedAt,
+            OffsetDateTime deletedAt
+    ) {
         this(hoVaTen, gioiTinh, ngaySinh);
         this.id = id;
+        this.soDienThoai = soDienThoai;
         this.giayToTuyThan = giayToTuyThan;
         this.soTheBhyt = soTheBhyt;
         this.diaChi = diaChi;
@@ -46,6 +86,7 @@ public class Patient {
         this.danToc = danToc;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     public Long getId() {
@@ -78,6 +119,14 @@ public class Patient {
 
     public void setNgaySinh(LocalDate ngaySinh) {
         this.ngaySinh = Objects.requireNonNull(ngaySinh, "ngaySinh must not be null");
+    }
+
+    public String getSoDienThoai() {
+        return soDienThoai;
+    }
+
+    public void setSoDienThoai(String soDienThoai) {
+        this.soDienThoai = soDienThoai;
     }
 
     public String getGiayToTuyThan() {
@@ -134,5 +183,13 @@ public class Patient {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public OffsetDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(OffsetDateTime deletedAt) {
+        this.deletedAt = deletedAt;
     }
 }

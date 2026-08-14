@@ -74,7 +74,7 @@ public class Revenue {
     }
 
     public void setDienGiai(String dienGiai) {
-        this.dienGiai = Objects.requireNonNull(dienGiai, "dienGiai must not be null");
+        this.dienGiai = dienGiai;
     }
 
     public BigDecimal getSoTien() {

@@ -85,6 +85,18 @@ class DentalPatientSchemaTest {
                     )
                     """));
 
+            assertTrue(queryBoolean(connection, """
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM pg_constraint constraint_definition
+                        JOIN pg_class table_definition ON table_definition.oid = constraint_definition.conrelid
+                        JOIN pg_namespace schema_definition ON schema_definition.oid = table_definition.relnamespace
+                        WHERE schema_definition.nspname = current_schema()
+                          AND table_definition.relname = 'patients'
+                          AND constraint_definition.conname = 'chk_patients_gioi_tinh'
+                    )
+                    """));
+
             assertFalse(queryBoolean(connection, """
                     SELECT EXISTS (
                         SELECT 1
@@ -98,6 +110,12 @@ class DentalPatientSchemaTest {
             assertEquals(
                     Set.of(
                             "idx_patients_ho_va_ten",
+                            "idx_patients_ho_va_ten_search",
+                            "idx_patients_so_dien_thoai",
+                            "idx_patients_active_search",
+                            "idx_patients_active_phone_search",
+                            "idx_patients_active_id",
+                            "idx_patients_deleted_at",
                             "idx_visits_patient_id",
                             "idx_visits_created_at",
                             "idx_visits_ngay_kham",
@@ -110,6 +128,12 @@ class DentalPatientSchemaTest {
                             WHERE schemaname = current_schema()
                               AND indexname IN (
                                   'idx_patients_ho_va_ten',
+                                  'idx_patients_ho_va_ten_search',
+                                  'idx_patients_so_dien_thoai',
+                                  'idx_patients_active_search',
+                                  'idx_patients_active_phone_search',
+                                  'idx_patients_active_id',
+                                  'idx_patients_deleted_at',
                                   'idx_visits_patient_id',
                                   'idx_visits_created_at',
                                   'idx_visits_ngay_kham',
@@ -126,6 +150,8 @@ class DentalPatientSchemaTest {
                 Map.entry("patients.ho_va_ten", "NO"),
                 Map.entry("patients.gioi_tinh", "NO"),
                 Map.entry("patients.ngay_sinh", "NO"),
+                Map.entry("patients.so_dien_thoai", "YES"),
+                Map.entry("patients.deleted_at", "YES"),
                 Map.entry("patients.giay_to_tuy_than", "YES"),
                 Map.entry("patients.so_the_bhyt", "YES"),
                 Map.entry("patients.dia_chi", "YES"),
@@ -141,7 +167,7 @@ class DentalPatientSchemaTest {
                 Map.entry("visits.ghi_chu", "YES"),
                 Map.entry("doanh_thu.visit_id", "NO"),
                 Map.entry("doanh_thu.ngay_thang", "NO"),
-                Map.entry("doanh_thu.dien_giai", "NO"),
+                Map.entry("doanh_thu.dien_giai", "YES"),
                 Map.entry("doanh_thu.so_tien", "NO"),
                 Map.entry("doanh_thu.so_hieu", "YES")
         );

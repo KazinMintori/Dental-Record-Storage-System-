@@ -7,11 +7,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.dentalclinic</groupId>
-    <artifactId>dental-appointment-system</artifactId>
+    <artifactId>dental-record-storage-system</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.release>21</maven.compiler.release>
 
         <javafx.version>21.0.8</javafx.version>
@@ -40,6 +41,20 @@
             <version>42.7.7</version>
         </dependency>
 
+        <!-- Reuse established Supabase connections instead of opening a new TLS connection per query. -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>7.0.2</version>
+        </dependency>
+
+        <!-- Apache-licensed PDF export with embedded Unicode fonts. -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>3.0.8</version>
+        </dependency>
+
         <!-- JUnit -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -59,6 +74,7 @@
                 <version>3.13.0</version>
                 <configuration>
                     <release>${maven.compiler.release}</release>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
 

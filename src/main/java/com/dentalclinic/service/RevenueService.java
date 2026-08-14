@@ -90,7 +90,6 @@ public class RevenueService {
         if (revenue.getNgayThang() == null) {
             throw new ServiceException("Revenue date is required.");
         }
-        requireText(revenue.getDienGiai(), "Revenue description is required.");
         if (revenue.getSoTien() == null) {
             throw new ServiceException("Revenue amount is required.");
         }
@@ -105,12 +104,6 @@ public class RevenueService {
         }
         if (from.isAfter(to)) {
             throw new ServiceException("Start date must not be after end date.");
-        }
-    }
-
-    private static void requireText(String value, String message) {
-        if (value == null || value.isBlank()) {
-            throw new ServiceException(message);
         }
     }
 

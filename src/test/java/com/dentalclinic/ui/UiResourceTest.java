@@ -22,6 +22,8 @@ class UiResourceTest {
         assertNotNull(Main.class.getResource("/fxml/patient-screen.fxml"));
         assertNotNull(Main.class.getResource("/fxml/report-screen.fxml"));
         assertNotNull(Main.class.getResource("/css/style.css"));
+        assertNotNull(Main.class.getResource("/db/migration/V3__patient_trash_and_gender.sql"));
+        assertNotNull(Main.class.getResource("/db/migration/V4__patient_pagination_indexes_and_optional_revenue.sql"));
     }
 
     @Test
@@ -50,8 +52,37 @@ class UiResourceTest {
     @Test
     void patientScreenProvidesDynamicListsDetailsAndForms() throws Exception {
         String fxml = resourceText("/fxml/patient-screen.fxml");
-        assertTrue(fxml.contains("fx:id=\"patientListContainer\""));
-        assertTrue(fxml.contains("<TilePane fx:id=\"patientListContainer\""));
+        assertTrue(fxml.contains("fx:id=\"patientTable\""));
+        assertTrue(fxml.contains("<TableView fx:id=\"patientTable\""));
+        assertTrue(fxml.contains("fx:id=\"patientCodeColumn\""));
+        assertTrue(fxml.contains("fx:id=\"patientNameColumn\""));
+        assertTrue(fxml.contains("fx:id=\"patientBirthDateColumn\""));
+        assertTrue(fxml.contains("fx:id=\"patientPhoneColumn\""));
+        assertTrue(fxml.contains("fx:id=\"patientSelectColumn\""));
+        assertTrue(fxml.contains("fx:id=\"patientActionColumn\""));
+        assertTrue(fxml.contains("fx:id=\"tableLoadingOverlay\""));
+        assertTrue(fxml.contains("fx:id=\"paginationStatusLabel\""));
+        assertTrue(fxml.contains("onAction=\"#goToFirstPage\""));
+        assertTrue(fxml.contains("onAction=\"#goToLastPage\""));
+        assertTrue(fxml.contains("fx:id=\"advancedFilterPanel\""));
+        assertTrue(fxml.contains("fx:id=\"patientCodeFilterField\""));
+        assertTrue(fxml.contains("fx:id=\"phoneFilterField\""));
+        assertTrue(fxml.contains("fx:id=\"birthDateFilterField\""));
+        assertTrue(fxml.contains("fx:id=\"genderFilterField\""));
+        assertTrue(fxml.contains("onAction=\"#clearAllSearchFilters\""));
+        assertTrue(fxml.contains("fx:id=\"patientLoadingView\""));
+        assertTrue(fxml.contains("onAction=\"#openTrash\""));
+        assertTrue(fxml.contains("text=\"Xem thùng rác\" onAction=\"#openTrash\""));
+        assertTrue(fxml.contains("text=\"Thùng rác\" onAction=\"#moveSelectedPatientsToTrash\""));
+        assertTrue(fxml.contains("text=\"Tìm\" onAction=\"#searchPatients\" styleClass=\"utility-button\""));
+        assertTrue(fxml.contains("text=\"Bộ lọc\" onAction=\"#toggleAdvancedFilters\" styleClass=\"utility-button\""));
+        assertTrue(fxml.contains("fx:id=\"bulkRestoreButton\""));
+        assertTrue(fxml.contains("onAction=\"#restoreSelectedPatients\""));
+        assertTrue(fxml.contains("fx:id=\"bulkPermanentDeleteButton\""));
+        assertTrue(fxml.contains("onAction=\"#permanentlyDeleteSelectedPatients\""));
+        assertTrue(fxml.contains("<ComboBox fx:id=\"patientGenderField\""));
+        assertTrue(fxml.contains("Ngày/Tháng/Năm"));
+        assertTrue(fxml.contains("Không tìm thấy kết quả") || fxml.contains("fx:id=\"patientTablePlaceholder\""));
         assertTrue(fxml.contains("fx:id=\"directoryView\""));
         assertTrue(fxml.contains("fx:id=\"detailView\""));
         assertTrue(fxml.contains("fx:id=\"visitListContainer\""));
@@ -63,6 +94,12 @@ class UiResourceTest {
         assertTrue(fxml.contains("fx:id=\"revenueTotalLabel\""));
         assertTrue(fxml.contains("onAction=\"#addRevenueRow\""));
         assertTrue(fxml.contains("onAction=\"#deleteCurrentVisit\""));
+        assertTrue(fxml.contains("fx:id=\"visitDateError\""));
+        assertTrue(fxml.contains("fx:id=\"dentistError\""));
+        assertTrue(fxml.contains("fx:id=\"symptomsError\""));
+        assertTrue(fxml.contains("fx:id=\"diagnosisError\""));
+        assertTrue(fxml.contains("fx:id=\"treatmentError\""));
+        assertTrue(fxml.contains("fx:id=\"visitRevenueError\""));
         assertFalse(fxml.contains("Nguyễn Minh Anh"));
         assertFalse(fxml.contains("Trần Thị Mai"));
     }
@@ -76,7 +113,10 @@ class UiResourceTest {
         assertTrue(fxml.contains("fx:id=\"toDatePicker\""));
         assertEquals(2, occurrences(fxml, "<DatePicker"));
         assertTrue(fxml.contains("Xem trước"));
-        assertTrue(fxml.contains("text=\"In\""));
+        assertTrue(fxml.contains("text=\"In / Xuất PDF\""));
+        assertTrue(fxml.contains("onAction=\"#previewReport\""));
+        assertTrue(fxml.contains("onAction=\"#exportPdf\""));
+        assertTrue(fxml.contains("fx:id=\"reportProgress\""));
     }
 
     @Test
@@ -86,6 +126,42 @@ class UiResourceTest {
         assertTrue(css.contains(".patient-card-selected"));
         assertTrue(css.contains(".visit-card"));
         assertTrue(css.contains(".report-option:selected"));
+        assertTrue(css.contains(".report-preview-table"));
+        assertTrue(css.contains(".report-preview-frozen-table"));
+        assertTrue(css.contains(".revenue-paper-page"));
+        assertTrue(css.contains(".revenue-paper-grid"));
+        assertTrue(css.contains(".revenue-paper-data-cell"));
+        assertTrue(css.contains(".revenue-paper-meta-italic"));
+        assertTrue(css.contains(".input-invalid"));
+        assertTrue(css.contains(".field-error"));
+        assertTrue(css.contains(".utility-button:hover"));
+        assertTrue(css.contains(".primary-button:hover"));
+        assertTrue(css.contains(".danger-button:hover"));
+        assertTrue(css.contains(".pagination-button:hover"));
+        assertTrue(css.contains(".table-row-cell:odd"));
+        assertTrue(css.contains(".table-action-edit"));
+        assertTrue(css.contains(".table-cell.checkbox-column"));
+        assertTrue(css.contains("-fx-alignment: CENTER"));
+        assertTrue(css.contains(".restore-button:hover"));
+        assertTrue(css.contains("-fx-border-color: #2563eb"));
+    }
+
+    @Test
+    void trashMigrationConstrainsGenderAndKeepsDeletionRecoverable() throws Exception {
+        String migration = resourceText("/db/migration/V3__patient_trash_and_gender.sql");
+        assertTrue(migration.contains("deleted_at TIMESTAMP WITH TIME ZONE"));
+        assertTrue(migration.contains("CHECK (gioi_tinh IN ('Nam', 'Nữ', 'Khác'))"));
+        assertTrue(migration.contains("idx_patients_active_search"));
+        assertTrue(migration.contains("idx_patients_deleted_at"));
+    }
+
+    @Test
+    void paginationMigrationAddsIndexesAndOptionalRevenueDescription() throws Exception {
+        String migration = resourceText("/db/migration/V4__patient_pagination_indexes_and_optional_revenue.sql");
+        assertTrue(migration.contains("ALTER COLUMN dien_giai DROP NOT NULL"));
+        assertTrue(migration.contains("idx_patients_active_search"));
+        assertTrue(migration.contains("idx_patients_active_phone_search"));
+        assertTrue(migration.contains("idx_patients_active_id"));
     }
 
     private static Document parseFxml(String fileName) throws Exception {

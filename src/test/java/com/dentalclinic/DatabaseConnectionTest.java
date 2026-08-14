@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class DatabaseConnectionTest {
@@ -37,6 +38,26 @@ class DatabaseConnectionTest {
                             + "and project status. SQL state: " + exception.getSQLState()
                             + ". The password has not been included in this message."
             );
+        }
+    }
+
+    @Test
+    void databaseAndJdbcConnectionUseUtf8() throws SQLException {
+        assertTrue(DatabaseConfig.findMissingEnvironmentVariables().isEmpty(),
+                "Supabase environment variables are required for the encoding integration test.");
+        try (Connection connection = new DatabaseConfig().getConnection()) {
+            assertEquals("UTF8", setting(connection, "server_encoding"));
+            assertEquals("UTF8", setting(connection, "client_encoding"));
+        }
+    }
+
+    private static String setting(Connection connection, String name) throws SQLException {
+        try (var statement = connection.prepareStatement("SELECT current_setting(?)")) {
+            statement.setString(1, name);
+            try (var results = statement.executeQuery()) {
+                assertTrue(results.next());
+                return results.getString(1);
+            }
         }
     }
 }

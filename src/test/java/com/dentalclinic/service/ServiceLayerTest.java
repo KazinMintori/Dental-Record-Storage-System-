@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,6 +58,13 @@ class ServiceLayerTest {
     }
 
     @Test
+    void unsupportedPatientGenderIsRejected() {
+        Patient patient = validPatient();
+        patient.setGioiTinh("Không xác định");
+        assertThrows(ServiceException.class, () -> patientService.createPatient(patient));
+    }
+
+    @Test
     void missingPatientBirthDateIsRejected() throws Exception {
         Patient patient = validPatient();
         setField(patient, "ngaySinh", null);
@@ -66,6 +74,13 @@ class ServiceLayerTest {
     @Test
     void optionalPatientFieldsMayBeNull() {
         assertDoesNotThrow(() -> patientService.createPatient(validPatient()));
+    }
+
+    @Test
+    void bulkTrashOperationsRejectAnEmptySelection() {
+        assertThrows(ServiceException.class, () -> patientService.deletePatients(List.of()));
+        assertThrows(ServiceException.class, () -> patientService.restorePatients(List.of()));
+        assertThrows(ServiceException.class, () -> patientService.permanentlyDeletePatients(List.of()));
     }
 
     @Test
@@ -127,10 +142,12 @@ class ServiceLayerTest {
     }
 
     @Test
-    void blankRevenueDescriptionIsRejected() {
+    void blankAndNullRevenueDescriptionAreAccepted() {
         Revenue revenue = validRevenue();
         revenue.setDienGiai("  ");
-        assertThrows(ServiceException.class, () -> revenueService.createRevenue(revenue));
+        assertSame(revenue, revenueService.createRevenue(revenue));
+        revenue.setDienGiai(null);
+        assertSame(revenue, revenueService.createRevenue(revenue));
     }
 
     @Test
@@ -215,6 +232,10 @@ class ServiceLayerTest {
     }
 
     private static class PatientTestRepository extends PatientRepository {
+        private PatientTestRepository() {
+            super(() -> null);
+        }
+
         @Override
         public Patient save(Patient patient) {
             return patient;
@@ -222,6 +243,10 @@ class ServiceLayerTest {
     }
 
     private static class VisitTestRepository extends VisitRepository {
+        private VisitTestRepository() {
+            super(() -> null);
+        }
+
         @Override
         public Visit save(Visit visit) {
             return visit;
@@ -229,6 +254,10 @@ class ServiceLayerTest {
     }
 
     private static class RevenueTestRepository extends RevenueRepository {
+        private RevenueTestRepository() {
+            super(() -> null);
+        }
+
         @Override
         public Revenue save(Revenue revenue) {
             return revenue;

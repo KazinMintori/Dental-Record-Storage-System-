@@ -68,7 +68,7 @@ public class RevenueRepository {
         this.connectionProvider = databaseConfig::getConnection;
     }
 
-    RevenueRepository(ConnectionProvider connectionProvider) {
+    protected RevenueRepository(ConnectionProvider connectionProvider) {
         this.connectionProvider = Objects.requireNonNull(connectionProvider, "connectionProvider must not be null");
     }
 
@@ -222,7 +222,7 @@ public class RevenueRepository {
     }
 
     @FunctionalInterface
-    interface ConnectionProvider {
+    protected interface ConnectionProvider {
         Connection getConnection() throws SQLException;
     }
 }

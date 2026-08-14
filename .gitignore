@@ -42,3 +42,10 @@ database.properties
 database.properties.local
 *.secrets.properties
 application-local.properties
+node_modules/
+output/
+tmp/
+target/
+
+.env
+.env.*

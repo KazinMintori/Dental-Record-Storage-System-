@@ -57,7 +57,7 @@ public class VisitRepository {
                 bac_si_kham = ?,
                 ghi_chu = ?,
                 updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
+            WHERE id = ? AND patient_id = ?
             """;
 
     private static final String DELETE_SQL = "DELETE FROM visits WHERE id = ?";
@@ -73,7 +73,7 @@ public class VisitRepository {
         this.connectionProvider = databaseConfig::getConnection;
     }
 
-    VisitRepository(ConnectionProvider connectionProvider) {
+    protected VisitRepository(ConnectionProvider connectionProvider) {
         this.connectionProvider = Objects.requireNonNull(connectionProvider, "connectionProvider must not be null");
     }
 
@@ -169,8 +169,9 @@ public class VisitRepository {
              PreparedStatement statement = connection.prepareStatement(UPDATE_SQL)) {
             bindVisitFields(statement, visit);
             statement.setLong(9, visit.getId());
+            statement.setLong(10, visit.getPatientId());
             if (statement.executeUpdate() == 0) {
-                throw new RepositoryException("Cannot update a visit that does not exist.");
+                throw new RepositoryException("Cannot update a visit outside its patient record.");
             }
         } catch (SQLException exception) {
             throw new RepositoryException("Could not update the visit.", exception);
@@ -228,7 +229,7 @@ public class VisitRepository {
     }
 
     @FunctionalInterface
-    interface ConnectionProvider {
+    protected interface ConnectionProvider {
         Connection getConnection() throws SQLException;
     }
 }

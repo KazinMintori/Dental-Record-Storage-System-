@@ -17,6 +17,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class DomainModelTest {
 
     @Test
+    void patientPageCalculatesNavigationAndDisplayedRange() {
+        java.util.List<Patient> patients = java.util.stream.LongStream.rangeClosed(51, 75)
+                .mapToObj(id -> new Patient(id, "Bệnh nhân " + id, "Nam", LocalDate.of(1990, 1, 1),
+                        null, null, null, null, null, null, null, null))
+                .toList();
+        PatientPage page = new PatientPage(patients, 75, 1, 50);
+
+        assertEquals(2, page.totalPages());
+        assertEquals(51, page.firstDisplayedNumber());
+        assertEquals(75, page.lastDisplayedNumber());
+    }
+
+    @Test
     void patientRepresentsRequiredAndOptionalDatabaseFields() {
         LocalDate ngaySinh = LocalDate.of(1985, 4, 12);
         Patient patient = new Patient("Nguyen Van An", "Nam", ngaySinh);
@@ -24,18 +37,22 @@ class DomainModelTest {
         assertEquals("Nguyen Van An", patient.getHoVaTen());
         assertEquals("Nam", patient.getGioiTinh());
         assertEquals(ngaySinh, patient.getNgaySinh());
+        assertNull(patient.getSoDienThoai());
         assertNull(patient.getGiayToTuyThan());
         assertNull(patient.getSoTheBhyt());
         assertNull(patient.getDiaChi());
         assertNull(patient.getNgheNghiep());
         assertNull(patient.getDanToc());
+        assertNull(patient.getDeletedAt());
 
+        patient.setSoDienThoai("0123456789");
         patient.setGiayToTuyThan("CCCD-001");
         patient.setSoTheBhyt("BHYT-001");
         patient.setDiaChi("Da Nang");
         patient.setNgheNghiep("Giao vien");
         patient.setDanToc("Kinh");
 
+        assertEquals("0123456789", patient.getSoDienThoai());
         assertEquals("CCCD-001", patient.getGiayToTuyThan());
         assertEquals("BHYT-001", patient.getSoTheBhyt());
         assertEquals("Da Nang", patient.getDiaChi());
@@ -105,6 +122,14 @@ class DomainModelTest {
     }
 
     @Test
+    void revenueDescriptionCanBeNull() {
+        Revenue revenue = new Revenue(7L, LocalDate.of(2026, 8, 13), null, new BigDecimal("0"));
+
+        assertNull(revenue.getSoHieu());
+        assertNull(revenue.getDienGiai());
+    }
+
+    @Test
     void revenueUsesOffsetDateTimeForDatabaseTimestamp() {
         OffsetDateTime createdAt = OffsetDateTime.of(2026, 8, 13, 11, 0, 0, 0, ZoneOffset.ofHours(7));
         Revenue revenue = new Revenue(
@@ -122,13 +147,15 @@ class DomainModelTest {
                 Map.entry("hoVaTen", String.class),
                 Map.entry("gioiTinh", String.class),
                 Map.entry("ngaySinh", LocalDate.class),
+                Map.entry("soDienThoai", String.class),
                 Map.entry("giayToTuyThan", String.class),
                 Map.entry("soTheBhyt", String.class),
                 Map.entry("diaChi", String.class),
                 Map.entry("ngheNghiep", String.class),
                 Map.entry("danToc", String.class),
                 Map.entry("createdAt", OffsetDateTime.class),
-                Map.entry("updatedAt", OffsetDateTime.class)
+                Map.entry("updatedAt", OffsetDateTime.class),
+                Map.entry("deletedAt", OffsetDateTime.class)
         ), fieldsOf(Patient.class));
 
         assertEquals(Map.ofEntries(

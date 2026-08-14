@@ -1,11 +1,16 @@
 package com.dentalclinic;
 
 import com.dentalclinic.controller.PatientController;
+import com.dentalclinic.controller.ReportController;
+import com.dentalclinic.config.DatabaseConfig;
 import com.dentalclinic.repository.PatientRepository;
+import com.dentalclinic.repository.ReportRepository;
 import com.dentalclinic.repository.RepositoryTransaction;
 import com.dentalclinic.repository.RevenueRepository;
 import com.dentalclinic.repository.VisitRepository;
 import com.dentalclinic.service.PatientService;
+import com.dentalclinic.service.PdfReportService;
+import com.dentalclinic.service.ReportService;
 import com.dentalclinic.service.RevenueService;
 import com.dentalclinic.service.VisitService;
 import com.dentalclinic.service.VisitRevenueWorkflowService;
@@ -25,15 +30,19 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         URL viewResource = requireResource("/fxml/main-view.fxml");
-        PatientService patientService = new PatientService(new PatientRepository());
-        VisitService visitService = new VisitService(new VisitRepository());
-        RevenueService revenueService = new RevenueService(new RevenueRepository());
+        DatabaseConfig databaseConfig = new DatabaseConfig();
+        PatientService patientService = new PatientService(new PatientRepository(databaseConfig));
+        VisitService visitService = new VisitService(new VisitRepository(databaseConfig));
+        RevenueService revenueService = new RevenueService(new RevenueRepository(databaseConfig));
         VisitRevenueWorkflowService workflowService = new VisitRevenueWorkflowService(
-                new RepositoryTransaction(new com.dentalclinic.config.DatabaseConfig())
+                new RepositoryTransaction(databaseConfig)
         );
+        ReportService reportService = new ReportService(new ReportRepository(databaseConfig));
+        PdfReportService pdfReportService = new PdfReportService();
         FXMLLoader loader = new FXMLLoader(viewResource);
         loader.setControllerFactory(type -> createController(
-                type, patientService, visitService, revenueService, workflowService));
+                type, patientService, visitService, revenueService, workflowService,
+                reportService, pdfReportService));
         Parent root = loader.load();
 
         Scene scene = new Scene(root, 1280, 800);
@@ -44,6 +53,11 @@ public class Main extends Application {
         stage.setMinHeight(650);
         stage.setScene(scene);
         stage.show();
+    }
+
+    @Override
+    public void stop() {
+        DatabaseConfig.shutdownConnectionPool();
     }
 
     private static URL requireResource(String path) {
@@ -59,10 +73,15 @@ public class Main extends Application {
             PatientService patientService,
             VisitService visitService,
             RevenueService revenueService,
-            VisitRevenueWorkflowService workflowService
+            VisitRevenueWorkflowService workflowService,
+            ReportService reportService,
+            PdfReportService pdfReportService
     ) {
         if (type == PatientController.class) {
             return new PatientController(patientService, visitService, revenueService, workflowService);
+        }
+        if (type == ReportController.class) {
+            return new ReportController(reportService, pdfReportService);
         }
         try {
             return type.getDeclaredConstructor().newInstance();
